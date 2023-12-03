@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+html,
+body {
+	@apply h-full overflow-hidden;
+}
+
+:root [data-theme='crimson'] {
+	--on-primary: #ffffff;
+	--theme-rounded-base: 8px;
+	--theme-rounded-container: 4px;
+	--theme-font-family-base: Lato-Bold, sans-serif;
+	--theme-font-family-heading: Lato-Bold, sans-serif;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/fonts/Lato-Black.ttf'), url('/fonts/Lato-BlackItalic.ttf'), url('/fonts/Lato-Bold.ttf'),
+		url('/fonts/Lato-BoldItalic.ttf'), url('/fonts/Lato-Italic.ttf'), url('/fonts/Lato-Light.ttf'),
+		url('/fonts/Lato-LightItalic.ttf'), url('/fonts/Lato-Regular.ttf'), url('/fonts/Lato-Thin.ttf'),
+		url('/fonts/Lato-ThinItalic.ttf');
+}
+
+.app-bar {
+	@apply variant-glass-surface;
+}
+
+.lightswitch-track {
+	border-radius: 24px !important;
+}
+
+.lightswitch-thumb {
+	border-radius: 24px !important;
+}
+
+.card {
+	border-radius: 12px !important;
+}
+
+.toast {
+	border-radius: 8px !important;
+}
+
+.text-base {
+	@apply text-white;
+}
+
+.error-text {
+	@apply text-red-500;
+	font-size: 0.8rem;
+}
+
+.variant-filled-info {
+	background-color: #169db2 !important;
+}
+
+.variant-filled-success {
+	background-color: #27a243 !important;
+}
+
+.variant-filled-error {
+	background-color: #d53343 !important;
+}
+
+.variant-filled-warning {
+	background-color: #f7bb07 !important;
+}
+
+.btn-icon.variant-filled {
+	background-color: white !important;
+	color: black !important;
+}
+
+.btn-icon.btn-icon-sm {
+	width: 24px !important;
+}
+
+.outer-wrapper {
+	width: max-content;
+	height: 100vh;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
+.inner-wrapper {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+}
