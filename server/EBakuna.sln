@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBakuna.Api", "EBakuna.Api\EBakuna.Api.csproj", "{07658692-697A-49B9-A88A-4F8707AF6D8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBakuna.Api.Generator", "EBakuna.Api.Generator\EBakuna.Api.Generator.csproj", "{14693F6C-1890-4F71-B4B0-8C2E0E096658}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBakuna.Source.Generator", "EBakuna.Source.Generator\EBakuna.Source.Generator.csproj", "{529C9F5A-B8D9-420C-A295-C4DB56BCFDF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{07658692-697A-49B9-A88A-4F8707AF6D8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07658692-697A-49B9-A88A-4F8707AF6D8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07658692-697A-49B9-A88A-4F8707AF6D8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14693F6C-1890-4F71-B4B0-8C2E0E096658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14693F6C-1890-4F71-B4B0-8C2E0E096658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14693F6C-1890-4F71-B4B0-8C2E0E096658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14693F6C-1890-4F71-B4B0-8C2E0E096658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{529C9F5A-B8D9-420C-A295-C4DB56BCFDF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529C9F5A-B8D9-420C-A295-C4DB56BCFDF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529C9F5A-B8D9-420C-A295-C4DB56BCFDF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529C9F5A-B8D9-420C-A295-C4DB56BCFDF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,48 @@
+﻿services:
+  ebakuna-db:
+    hostname: ebakuna-db
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 8130:27017
+    volumes:
+      - ebakuna-data:/data/db
+    networks:
+      ebakuna_net:
+        ipv4_address: 18.1.0.1
+    restart: always
+    command: mongod --replSet ebakuna-set --bind_ip  18.1.0.1
+  ebakuna-init:
+    image: mongo
+    restart: 'no'
+    depends_on:
+      - ebakuna-db
+    networks:
+      ebakuna_net:
+        ipv4_address: 18.1.0.2
+    command: >
+      mongosh --host ebakuna-db:27017 --eval
+      '
+      db = (new Mongo("18.1.0.1:27017")).getDB("admin");
+      config = {
+      "_id" : "ebakuna-set",
+      "members" : [
+        {
+          "_id" : 0,
+          "host" : "ebakuna-db:27017"
+        }
+      ]
+      };
+      rs.initiate(config);
+      '
+volumes:
+  ebakuna-data:
+
+networks:
+  ebakuna_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 18.1.0.0/24
+          gateway: 18.1.0.254
