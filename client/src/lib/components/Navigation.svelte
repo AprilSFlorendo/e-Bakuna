@@ -26,7 +26,7 @@
 	</ul>
 </nav>
 
-<style lang="scss">
+<style lang="postcss">
 	.selected {
 		color: var(--on-primary) !important;
 	}

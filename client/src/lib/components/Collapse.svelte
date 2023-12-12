@@ -19,7 +19,7 @@
 			<div></div>
 			<div class="flex-none">
 				<div class={arrowClass}>
-					<Icon name="expand-more" width="1.5rem" height="1.5rem" />
+					<Icon name="expand-more" />
 				</div>
 			</div>
 		</div>

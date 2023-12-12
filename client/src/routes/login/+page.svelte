@@ -1,51 +1,48 @@
 <script>
+	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { ProgressRadial, getToastStore, focusTrap } from '@skeletonlabs/skeleton';
 	import { validation, onSubmit, resetValidationOnInput } from '$lib/utils/input-helpers';
-	import { login } from './service';
-	import { token, user } from '$lib/store';
+	import { user } from '$lib/store';
 	import { ToastType, showToast } from '$lib/utils/toast-manager';
-	import { page } from '$app/stores';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 
 	const toastStore = getToastStore();
 
-	let username = '';
-	let password = '';
+	export let form;
 
-	let isFocused = true;
 	let submitting = false;
 
-	async function handleSubmit() {
-		submitting = true;
-		const res = await login(username, password);
-
-		if (res.status === 200) {
-			document.cookie = `token=${res.body.token}; path=/; expires=${new Date(
-				new Date().getTime() + 1000 * 60 * 60 * 24 * 7
-			).toUTCString()}`;
-
-			localStorage.setItem('user', JSON.stringify(res.body.user));
-			localStorage.setItem('userImage', JSON.stringify(res.body.user.image));
-
-			token.set(res.body.token);
-			user.set(JSON.stringify(res.body.user));
-
-			var redirectUrl = $page.url.searchParams.get('redirectUrl');
-
-			await goto(redirectUrl ? `/${redirectUrl}` : '/');
-		} else {
-			console.log(res);
-			showToast(ToastType.Error, toastStore, res.error);
-		}
-		submitting = false;
-	}
+	let redirectUrl = $page.url.searchParams.get('redirectUrl');
+	let formAction = redirectUrl ? `/login?redirectUrl=${decodeURIComponent(redirectUrl)}` : '/login';
 </script>
 
 <main class="flex justify-center py-8 px-2">
 	<form
-		on:submit|preventDefault={handleSubmit}
-		use:focusTrap={isFocused}
+		method="POST"
+		action={formAction}
+		use:focusTrap={true}
+		use:enhance={() => {
+			submitting = true;
+
+			return async ({ result, update }) => {
+				await update();
+
+				if (result.type === 'success') {
+					localStorage.setItem('user', JSON.stringify(result?.data?.user));
+
+					user.set(JSON.stringify(result?.data?.user));
+
+					if (redirectUrl) goto(redirectUrl, { replaceState: true });
+					else goto('/');
+				} else {
+					//@ts-ignore
+					showToast(ToastType.Error, toastStore, result?.data?.message ?? 'Login failed');
+				}
+				submitting = false;
+			};
+		}}
 		class="flex flex-col card bg-initial m-4 p-8 w-80"
 	>
 		<h1 class="text-xl font-bold text-center mb-2">Welcome</h1>
@@ -57,7 +54,7 @@
 				name="username"
 				placeholder="username"
 				class="input input-bordered"
-				bind:value={username}
+				value={form?.username ?? ''}
 				use:validation={['', '']}
 				use:resetValidationOnInput
 			/>
@@ -66,7 +63,7 @@
 
 		<div class="label mb-2">
 			<span class="label-text">Password</span>
-			<PasswordInput id="password" name="password" required bind:value={password} />
+			<PasswordInput id="password" name="password" required value={form?.password ?? ''} />
 		</div>
 		<button disabled={submitting} class="btn variant-filled-primary my-4" on:click={onSubmit}>
 			{#if submitting}

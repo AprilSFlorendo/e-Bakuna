@@ -1,7 +1,7 @@
 import { PUBLIC_BASE_API } from '$env/static/public';
 
 export async function handle({ event, resolve }) {
-	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 	if (event.request.url.includes('/login')) {
 		const response = await resolve(event);
@@ -15,7 +15,7 @@ export async function handle({ event, resolve }) {
 			return redirectToLogin();
 		}
 
-		var res = await fetch(`${PUBLIC_BASE_API}/api/users/refresh-token`, {
+		const res = await fetch(`${PUBLIC_BASE_API}/api/users/refresh-token`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`

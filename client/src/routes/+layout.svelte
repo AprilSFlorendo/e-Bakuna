@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
+	import '$lib/models/user.extensions';
 	import {
 		AppBar,
 		Avatar,
@@ -14,13 +15,16 @@
 	import { fade, fly, slide } from 'svelte/transition';
 	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 
+	import AppLogo from '$lib/components/AppLogo.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 
 	import { quadInOut } from 'svelte/easing';
+	import { user, navOpen } from '$lib/store';
 	import { page } from '$app/stores';
-	import { user } from '$lib/store';
-	import { parseUser } from '$lib/utils/user-helpers';
+	import type { User } from '$lib/models/user';
+	import { tooltip } from '$lib/utils/tooltip';
 
 	initializeStores();
 
@@ -37,25 +41,18 @@
 		drawer.open(drawerSettings);
 	}
 
-	let sideBarOpen = true,
-		innerWidth = 768;
+	let innerWidth = 0,
+		currentUser: User | null = null;
 
-	$: if (innerWidth < 768) {
-		sideBarOpen = false;
-	}
-
+	$: showLabel = innerWidth > 425;
+	$: sideBarOpen = innerWidth > 768 && $navOpen;
 	$: isLogin = $page.url.pathname === '/login';
-
-	let image = '',
-		initials = '';
 
 	$: {
 		const current = $user;
 
-		if (current !== null) {
-			const parsed = parseUser(current);
-			image = parsed.image;
-			initials = parsed.initials;
+		if (current) {
+			currentUser = current.toUser();
 		}
 	}
 </script>
@@ -63,81 +60,87 @@
 <svelte:window bind:innerWidth />
 <Toast />
 <Drawer>
-	<div class="px-4 pt-4 flex items-center">
-		<img class="m-2 w-8 h-8" src="/favicon.png" alt="logo" />
-		<strong class="text-xl">e-Bakuna</strong>
+	<div class="px-4 pt-4">
+		<AppLogo />
 	</div>
 	<Navigation />
 </Drawer>
 
-<div class="flex h-full">
+<div class="base-container">
 	{#if sideBarOpen && !isLogin}
-		<aside
-			transition:slide={{ duration: 200, axis: 'x', easing: quadInOut }}
-			class="sidebar w-[250px] bg-surface-500/10"
-		>
-			<div
-				transition:fly={{ x: -150 }}
-				class="scroll-smooth overflow-hidden overflow-y-auto h-full"
-			>
-				<div class="px-4 py-2 flex items-center">
-					<img class="m-2 w-8 h-8" src="/favicon.png" alt="logo" />
-					<strong class="text-xl">e-Bakuna</strong>
+		<aside transition:slide={{ duration: 200, axis: 'x', easing: quadInOut }}>
+			<div transition:fly={{ x: -150 }} class="side-container">
+				<div class="p-4">
+					<AppLogo />
 				</div>
-				<div>
-					<Navigation />
-				</div>
+				<Navigation />
 			</div>
 		</aside>
 	{/if}
-	<div class="flex-1 flex flex-col h-full scroll-smooth overflow-auto">
-		<div class="sticky top-0 w-full">
+	<div class="main-body">
+		<div class="app-bar-container">
 			<AppBar>
 				<svelte:fragment slot="lead">
 					{#if !isLogin}
-						<button class="md:hidden btn btn-sm mr-4" on:click={drawerOpen}>
-							<span>
-								<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
-									<rect width="100" height="10" />
-									<rect y="30" width="100" height="10" />
-									<rect y="60" width="100" height="10" />
-								</svg>
-							</span>
+						<button class="md:hidden btn btn-sm mr-1" on:click={drawerOpen}>
+							<Icon name="home" width="1.1rem" height="1.1rem" />
 						</button>
 						<button
-							class="hidden md:block btn btn-sm mr-4"
-							on:click={() => (sideBarOpen = !sideBarOpen)}
+							class="hidden md:block btn btn-sm mr-1"
+							on:click={() => {
+								sideBarOpen = !sideBarOpen;
+								$navOpen = sideBarOpen;
+								localStorage.setItem('navOpen', sideBarOpen.toString());
+							}}
 						>
-							<span>
-								<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
-									<rect width="100" height="10" />
-									<rect y="30" width="100" height="10" />
-									<rect y="60" width="100" height="10" />
-								</svg>
-							</span>
+							<Icon name="home" width="1.1rem" height="1.1rem" />
 						</button>
 					{/if}
 					{#if !sideBarOpen || isLogin}
-						<div
-							in:fly={{ x: -150, duration: 300 }}
-							out:fade={{ duration: 300 }}
-							class="flex items-center"
-						>
-							<img class="mr-2 w-8 h-8" src="/favicon.png" alt="logo" />
-							<strong class="text-xl">e-Bakuna</strong>
+						<div in:fly={{ x: -150, duration: 300 }} out:fade={{ duration: 300 }}>
+							<AppLogo {showLabel} />
 						</div>
 					{/if}
 				</svelte:fragment>
 				<svelte:fragment slot="trail">
 					{#if !isLogin}
-						<Avatar src={image} {initials} width="w-8" />
+						<Avatar src={currentUser?.avatar} initials={currentUser?.initials} width="w-8" />
 					{/if}
-					<LightSwitch />
+					<div use:tooltip={'Toggle theme'}>
+						<LightSwitch title="" />
+					</div>
 				</svelte:fragment>
 			</AppBar>
 		</div>
-		<main class="flex-1">
+		<main>
 			<slot />
 		</main>
 	</div>
 </div>
+
+<style lang="postcss">
+	.base-container {
+		@apply flex h-full;
+	}
+
+	aside {
+		@apply flex-none w-[250px] bg-surface-500/10;
+	}
+
+	.side-container {
+		@apply scroll-smooth overflow-hidden overflow-y-auto h-full;
+	}
+
+	.main-body {
+		@apply flex-1 scroll-smooth overflow-auto;
+	}
+
+	.app-bar-container {
+		@apply sticky top-0;
+	}
+
+	:global(.tippy-box[data-theme='current']) {
+		border-radius: var(--theme-rounded-base);
+		@apply text-white bg-gray-900;
+	}
+</style>

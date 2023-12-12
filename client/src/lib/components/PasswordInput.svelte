@@ -8,13 +8,13 @@
 
 	import Icon from '$lib/components/Icon.svelte';
 	import { resetValidationOnInput, validation } from '$lib/utils/input-helpers';
-	import { onMount } from 'svelte';
 
 	let showPassword = false;
 	$: type = showPassword ? 'text' : 'password';
 
-	function onInput(event) {
-		value = event.target.value;
+	function onInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		value = target.value;
 	}
 
 	const passId = crypto.randomUUID();
@@ -35,9 +35,9 @@
 	/>
 	<button tabindex="-1" type="button" on:click={() => (showPassword = !showPassword)}>
 		{#if showPassword}
-			<Icon name="eye-slash" />
+			<Icon name="eye-slash" width="1.1rem" height="1.1rem" />
 		{:else}
-			<Icon name="eye" />
+			<Icon name="eye" width="1.1rem" height="1.1rem" />
 		{/if}
 	</button>
 </div>
