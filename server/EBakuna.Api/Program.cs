@@ -34,6 +34,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors(corsOrigin);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
